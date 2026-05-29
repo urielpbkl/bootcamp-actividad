@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Sprint de Innovación</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --producto: #FF6B35;
+  --experiencia: #7B2D8B;
+  --impacto: #2E8B57;
+  --venta: #1E90FF;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: #161d26;
+  color: #fff;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.screen {
+  display: none;
+  min-height: 100dvh;
+  padding: 24px;
+  animation: fadeIn 0.4s ease;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.screen.active { display: flex; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* BUTTONS */
+.btn {
+  padding: 16px 40px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:active { transform: scale(0.95); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF6B35, #ff8f65);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+}
+
+.btn-next {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+/* WELCOME */
+#welcome { text-align: center; }
+
+#welcome h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #FF6B35, #7B2D8B, #2E8B57, #1E90FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#welcome .subtitle {
+  font-size: 1.2rem;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+#welcome .event {
+  font-size: 0.9rem;
+  opacity: 0.4;
+  margin-bottom: 40px;
+}
+
+/* INTRO */
+#intro { text-align: center; }
+
+#intro h2 {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.examples-container {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 32px;
+}
+
+.example-card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border-left: 4px solid;
+  text-align: left;
+}
+
+.example-card:nth-child(1) { border-color: #FF6B35; }
+.example-card:nth-child(2) { border-color: #7B2D8B; }
+.example-card:nth-child(3) { border-color: #2E8B57; }
+
+.example-card h3 { font-size: 1.1rem; margin-bottom: 6px; }
+.example-card p { opacity: 0.8; line-height: 1.5; font-size: 0.9rem; }
+.example-card .lesson { margin-top: 6px; font-weight: 600; opacity: 1; }
+
+/* SETUP */
+#setup { text-align: center; }
+
+#setup h2 { font-size: 1.5rem; margin-bottom: 24px; }
+
+.level-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 30px;
+  padding: 4px;
+}
+
+.level-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 26px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.2s;
+}
+
+.level-btn.active {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.team-info {
+  font-size: 0.9rem;
+  opacity: 0.5;
+  margin-bottom: 24px;
+}
+
+/* CARD SCREEN */
+#card-screen { text-align: center; }
+
+.progress-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.progress-dot {
+  width: 48px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.15);
+  transition: background 0.3s;
+}
+
+.progress-dot.done { background: rgba(255,255,255,0.6); }
+.progress-dot.current { background: #fff; }
+
+.category-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+
+.step-indicator {
+  font-size: 0.8rem;
+  opacity: 0.4;
+  margin-bottom: 20px;
+}
+
+.card-container {
+  width: 100%;
+  max-width: 420px;
+  min-height: 260px;
+  border-radius: 20px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+  animation: slideIn 0.5s ease;
+  position: relative;
+}
+
+.card-container[data-cat="producto"] { background: linear-gradient(135deg, #FF6B35, #ff8f65); }
+.card-container[data-cat="experiencia"] { background: linear-gradient(135deg, #7B2D8B, #9b4dbb); }
+.card-container[data-cat="impacto"] { background: linear-gradient(135deg, #2E8B57, #3cb371); }
+.card-container[data-cat="venta"] { background: linear-gradient(135deg, #1E90FF, #63b3ff); }
+
+.card-container .card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.card-container .card-text {
+  font-size: clamp(1.05rem, 4vw, 1.3rem);
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.card-container .card-hint {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  font-style: italic;
+}
+
+.card-container .card-level-badge {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 0.7rem;
+  background: rgba(0,0,0,0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* TIMER */
+.timer-section {
+  margin-bottom: 20px;
+}
+
+.timer-display {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 10px;
+}
+
+.timer-display.warning { color: #ff6b6b; animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.timer-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.timer-btn.start { background: #2E8B57; }
+.timer-btn.pause { background: #ff6b6b; }
+
+.continue-btn {
+  padding: 16px 48px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  transition: transform 0.2s;
+}
+
+.continue-btn:active { transform: scale(0.95); }
+.continue-btn[data-cat="producto"] { background: var(--producto); box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4); }
+.continue-btn[data-cat="experiencia"] { background: var(--experiencia); box-shadow: 0 4px 20px rgba(123, 45, 139, 0.4); }
+.continue-btn[data-cat="impacto"] { background: var(--impacto); box-shadow: 0 4px 20px rgba(46, 139, 87, 0.4); }
+.continue-btn[data-cat="venta"] { background: var(--venta); box-shadow: 0 4px 20px rgba(30, 144, 255, 0.4); }
+
+/* DONE SCREEN */
+#done { text-align: center; }
+#done h2 { font-size: 1.8rem; margin-bottom: 12px; }
+#done p { opacity: 0.7; margin-bottom: 32px; font-size: 1rem; }
+
+.done-actions { display: flex; flex-direction: column; gap: 12px; }
+
+/* RESPONSIVE */
+@media (max-width: 400px) {
+  .screen { padding: 16px; }
+  .card-container { padding: 24px 16px; min-height: 220px; }
+}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div id="welcome" class="screen active">
+  <img src="61+nI2GbVCL.png" alt="Amazon" style="width: 280px; margin-bottom: 12px; border-radius: 16px;">
+  <h1>Sprint de Innovación</h1>
+  <p class="subtitle">Retos Relámpago</p>
+  <p class="event">Bootcamp Ahorra y Emprende 2026</p>
+  <button class="btn btn-primary" onclick="showScreen('intro')">Comenzar</button>
+</div>
+
+<!-- INTRO -->
+<div id="intro" class="screen">
+  <h2>¿Sabían que estas empresas innovaron así?</h2>
+  <div class="examples-container">
+    <div class="example-card">
+      <h3>🎨 Play-Doh</h3>
+      <p>Originalmente era un limpiador de paredes que no vendía. Lo reinventaron como plastilina para niños.</p>
+      <p class="lesson">→ Mismo producto, uso completamente diferente</p>
+    </div>
+    <div class="example-card">
+      <h3>🎮 Nintendo</h3>
+      <p>Empezó vendiendo cartas de naipes. Con el Wii, en vez de gráficos más reales, hicieron que te movieras.</p>
+      <p class="lesson">→ Pensaron diferente a todos los demás</p>
+    </div>
+    <div class="example-card">
+      <h3>🌮 Takis</h3>
+      <p>Las frituras siempre eran planas. Alguien dijo: "¿y si las enrollamos?" Mismos ingredientes, forma diferente.</p>
+      <p class="lesson">→ Un cambio simple = producto nuevo</p>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="showScreen('setup')">Siguiente →</button>
+</div>
+
+<!-- SETUP -->
+<div id="setup" class="screen">
+  <h2>¿Qué nivel es este equipo?</h2>
+  <div class="level-toggle">
+    <button class="level-btn active" data-level="primaria" onclick="setLevel('primaria')">Primaria</button>
+    <button class="level-btn" data-level="secundaria" onclick="setLevel('secundaria')">Secundaria</button>
+  </div>
+  <p class="team-info" id="team-info">Equipo <span id="team-num">1</span> de 11</p>
+  <button class="btn btn-primary" onclick="startRound()">¡Empezar retos!</button>
+</div>
+
+<!-- CARD -->
+<div id="card-screen" class="screen">
+  <div class="progress-bar" id="progress-bar">
+    <div class="progress-dot" data-step="0"></div>
+    <div class="progress-dot" data-step="1"></div>
+    <div class="progress-dot" data-step="2"></div>
+    <div class="progress-dot" data-step="3"></div>
+  </div>
+  <p class="category-label" id="cat-label">PRODUCTO</p>
+  <p class="step-indicator" id="step-indicator">Reto 1 de 4</p>
+
+  <div class="timer-section">
+    <div class="timer-display" id="timer-display">1:30</div>
+    <div class="timer-controls">
+      <button class="timer-btn start" id="timer-start" onclick="toggleTimer()">▶ Iniciar</button>
+      <button class="timer-btn" onclick="resetTimer()">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="card-container" id="card-container" data-cat="producto">
+    <span class="card-icon" id="card-icon">🔧</span>
+    <p class="card-text" id="card-text">Reto aquí</p>
+    <p class="card-hint" id="card-hint">💡 Pista</p>
+    <span class="card-level-badge" id="card-level" style="display:none"></span>
+  </div>
+
+  <button class="continue-btn" id="continue-btn" data-cat="producto" onclick="nextStep()">Continuar →</button>
+</div>
+
+<!-- DONE -->
+<div id="done" class="screen">
+  <h2>🎉 ¡Retos completos!</h2>
+  <p>¡Excelente trabajo, equipo!</p>
+  <div class="done-actions">
+    <button class="btn btn-primary" onclick="nextTeam()">Siguiente equipo →</button>
+    <button class="btn btn-next" onclick="showScreen('welcome')">Volver al inicio</button>
+  </div>
+</div>
+
+<script>
+const CATEGORIES = ['producto', 'experiencia', 'impacto', 'venta'];
+const CAT_NAMES = { producto: 'PRODUCTO', experiencia: 'EXPERIENCIA', impacto: 'IMPACTO', venta: 'VENTA' };
+const CAT_ICONS = { producto: '🔧', experiencia: '✨', impacto: '🌍', venta: '💰' };
+
+const CARDS = {
+  producto: [
+    { text: "Quita la parte más importante de tu producto. ¿Cómo lo haces útil de otra manera?", hint: "Piensa en otros usos", primaria: null, secundaria: null },
+    { text: null, hint: "Hazlo simple y divertido", primaria: "Tu producto ahora es para un niño de 3 años. ¿Cómo lo haces súper fácil de usar?", secundaria: "Tu producto ahora es para alguien que nunca ha usado algo parecido. ¿Cómo lo haces intuitivo?" },
+    { text: "Mejora tu producto usando SOLO cosas recicladas que encuentres en casa o la escuela.", hint: "Usa tu imaginación", primaria: null, secundaria: null },
+    { text: "Otro equipo hizo algo parecido pero mejor. ¿Qué le agregas al tuyo para ganar?", hint: "¿Qué te hace diferente?", primaria: null, secundaria: null },
+    { text: "Junta tu producto con el de otro equipo. ¡Inventen algo nuevo juntos!", hint: "2 ideas = 1 mejor idea", primaria: null, secundaria: null },
+    { text: "Tu producto debe caber en una mochila. ¿Cómo lo haces más pequeño sin que pierda lo bueno?", hint: "Piensa en lo portátil", primaria: null, secundaria: null },
+    { text: "Imagina que tu producto es el más caro del mundo. ¿Qué lo haría tan especial?", hint: "Piensa en lujo y calidad", primaria: null, secundaria: null },
+    { text: null, hint: "Piensa en digital", primaria: "Tu producto ya no es un objeto. Ahora es algo que haces por la gente. ¿Cómo funciona?", secundaria: "Tu producto ya no es un objeto. Ahora es una app o servicio digital. ¿Cómo funciona?" }
+  ],
+  experiencia: [
+    { text: "Dibuja con 5 emojis cómo se siente tu cliente. Cambia el emoji triste por uno feliz.", hint: "Encuentra el problema", primaria: null, secundaria: null },
+    { text: "Tienes SOLO 30 segundos para explicar tu producto. ¡Practica y convence!", hint: "Sé claro y emocionante", primaria: null, secundaria: null },
+    { text: null, hint: "¡Hazlo viral!", primaria: "Inventa un momento sorpresa que haga que tu cliente se lo cuente a sus amigos.", secundaria: "Inventa un momento sorpresa que haga que tu cliente saque el celular y lo comparta en redes." },
+    { text: "Diseña cómo se siente ABRIR o RECIBIR tu producto por primera vez.", hint: "La primera vez importa mucho", primaria: null, secundaria: null },
+    { text: "Un cliente está molesto con tu producto. ¿Qué haces para que termine sonriendo?", hint: "Resuelve con amabilidad", primaria: null, secundaria: null },
+    { text: "Tu abuelita quiere usar tu producto. ¿Cómo lo haces fácil para ella?", hint: "Piensa en todas las edades", primaria: null, secundaria: null },
+    { text: "Tienes 3 clientes muy diferentes (niño, mamá, maestro). ¿Cómo haces feliz a cada uno?", hint: "No todos quieren lo mismo", primaria: null, secundaria: null },
+    { text: "Quita todos los pasos complicados. ¿Cuál es la forma MÁS fácil de usar tu producto?", hint: "Simple = mejor", primaria: null, secundaria: null }
+  ],
+  impacto: [
+    { text: "Tu proyecto ahora debe resolver un problema de tu colonia o escuela. ¿Cuál escoges?", hint: "Piensa en lo que ves todos los días", primaria: null, secundaria: null },
+    { text: "Haz que tu producto contamine MENOS. ¿Qué material o proceso cambias?", hint: "Cuida el planeta", primaria: null, secundaria: null },
+    { text: "Tu proyecto debe ayudar a personas que tienen menos recursos. ¿Cómo lo adaptas?", hint: "Todos merecen cosas buenas", primaria: null, secundaria: null },
+    { text: null, hint: "Mide tu impacto", primaria: "Inventa UN número que demuestre que tu proyecto ayuda. (Ej: Usamos 5 botellas recicladas)", secundaria: "Inventa UN número que demuestre que tu proyecto ayuda. (Ej: Ahorramos X litros de agua al mes)" },
+    { text: "Todo tu producto debe poder regresar a la naturaleza. ¿De qué lo haces?", hint: "Nada de basura", primaria: null, secundaria: null },
+    { text: null, hint: "Negocio con corazón", primaria: "Regala algo de lo que ganas a alguien que lo necesite. ¿A quién ayudas?", secundaria: "Regala la mitad de lo que ganas. ¿A quién ayudas y cómo sigues vendiendo?" },
+    { text: "Tu producto debe enseñar algo importante mientras la persona lo usa. ¿Qué enseña?", hint: "Aprende sin darse cuenta", primaria: null, secundaria: null },
+    { text: "Tu producto debe funcionar SIN electricidad ni internet. ¿Cómo lo logras?", hint: "Funciona en cualquier lugar", primaria: null, secundaria: null }
+  ],
+  venta: [
+    { text: "Vende tu producto SIN hablar. Solo usa dibujos, señas o actuación. ¡Ensaya!", hint: "Comunica sin palabras", primaria: null, secundaria: null },
+    { text: null, hint: "Piensa diferente", primaria: "Tu producto es gratis por un día. ¿Cómo convences a la gente de que regrese a comprarlo?", secundaria: "Tu producto es GRATIS. ¿De qué otra forma ganas dinero? (publicidad, suscripción, premium...)" },
+    { text: "Explica tu producto en EXACTAMENTE 15 segundos. Ensaya con cronómetro.", hint: "Cada palabra cuenta", primaria: null, secundaria: null },
+    { text: "Haz que TODO el mundo hable de tu producto sin gastar ni un peso. ¿Cómo?", hint: "Creatividad pura", primaria: null, secundaria: null },
+    { text: "¡Tienes 5 minutos para convencer a alguien de otro equipo de ser tu cliente!", hint: "Sal y vende en vivo", primaria: null, secundaria: null },
+    { text: null, hint: "Que siempre quieran más", primaria: "Tu cliente te compra algo cada semana. ¿Qué le das para que siga regresando?", secundaria: "La gente paga cada mes por tu producto (como Netflix). ¿Qué ofreces para que no cancelen?" },
+    { text: "Crea una oferta IRRESISTIBLE sin bajar el precio. ¿Qué extra das?", hint: "Agrega valor, no descuento", primaria: null, secundaria: null },
+    { text: "Tu cliente es tu director de escuela. ¿Cómo le vendes y por qué le interesaría?", hint: "Conoce a tu cliente", primaria: null, secundaria: null }
+  ]
+};
+
+let currentLevel = 'primaria';
+let currentStep = 0;
+let teamNumber = 1;
+let timerInterval = null;
+let timerSeconds = 90;
+let timerRunning = false;
+const TIMER_DURATION = 90;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function setLevel(level) {
+  currentLevel = level;
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-level="${level}"]`).classList.add('active');
+}
+
+function startRound() {
+  currentStep = 0;
+  showCard();
+  showScreen('card-screen');
+}
+
+function showCard() {
+  stopTimer();
+  resetTimer();
+
+  const cat = CATEGORIES[currentStep];
+  const cards = CARDS[cat];
+  const idx = Math.floor(Math.random() * cards.length);
+  const card = cards[idx];
+
+  let text = card.text;
+  let levelLabel = '';
+  if (!text) {
+    text = card[currentLevel];
+    levelLabel = currentLevel === 'primaria' ? 'Primaria' : 'Secundaria';
+  }
+
+  document.getElementById('cat-label').textContent = CAT_NAMES[cat];
+  document.getElementById('step-indicator').textContent = `Reto ${currentStep + 1} de 4`;
+  document.getElementById('card-icon').textContent = CAT_ICONS[cat];
+  document.getElementById('card-text').textContent = text;
+  document.getElementById('card-hint').textContent = '💡 ' + card.hint;
+  document.getElementById('card-container').setAttribute('data-cat', cat);
+  document.getElementById('continue-btn').setAttribute('data-cat', cat);
+
+  const levelBadge = document.getElementById('card-level');
+  if (levelLabel) {
+    levelBadge.textContent = levelLabel;
+    levelBadge.style.display = 'block';
+  } else {
+    levelBadge.style.display = 'none';
+  }
+
+  // Update progress bar
+  document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+    dot.className = 'progress-dot';
+    dot.style.background = '';
+    if (i < currentStep) {
+      dot.classList.add('done');
+      dot.style.background = `var(--${CATEGORIES[i]})`;
+    }
+    if (i === currentStep) {
+      dot.classList.add('current');
+      dot.style.background = `var(--${CATEGORIES[i]})`;
+    }
+  });
+
+  // Update continue button text
+  const btnText = currentStep < 3 ? 'Continuar →' : '¡Terminamos! 🎉';
+  document.getElementById('continue-btn').textContent = btnText;
+
+  // Re-trigger card animation
+  const container = document.getElementById('card-container');
+  container.style.animation = 'none';
+  container.offsetHeight;
+  container.style.animation = 'slideIn 0.5s ease';
+}
+
+function nextStep() {
+  stopTimer();
+  currentStep++;
+  if (currentStep >= 4) {
+    showScreen('done');
+  } else {
+    showCard();
+  }
+}
+
+function nextTeam() {
+  teamNumber++;
+  if (teamNumber > 11) teamNumber = 1;
+  document.getElementById('team-num').textContent = teamNumber;
+  showScreen('setup');
+}
+
+function toggleTimer() {
+  if (timerRunning) {
+    stopTimer();
+  } else {
+    timerRunning = true;
+    document.getElementById('timer-start').textContent = '⏸ Pausar';
+    document.getElementById('timer-start').classList.remove('start');
+    document.getElementById('timer-start').classList.add('pause');
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        stopTimer();
+        document.getElementById('timer-display').textContent = "¡Tiempo!";
+        document.getElementById('timer-display').classList.add('warning');
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      }
+    }, 1000);
+  }
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  document.getElementById('timer-start').textContent = '▶ Iniciar';
+  document.getElementById('timer-start').classList.remove('pause');
+  document.getElementById('timer-start').classList.add('start');
+}
+
+function resetTimer() {
+  stopTimer();
+  timerSeconds = TIMER_DURATION;
+  updateTimerDisplay();
+  document.getElementById('timer-display').classList.remove('warning');
+}
+
+function updateTimerDisplay() {
+  const min = Math.floor(timerSeconds / 60);
+  const sec = timerSeconds % 60;
+  document.getElementById('timer-display').textContent = `${min}:${sec.toString().padStart(2, '0')}`;
+  if (timerSeconds <= 30 && timerSeconds > 0) {
+    document.getElementById('timer-display').classList.add('warning');
+  } else if (timerSeconds > 30) {
+    document.getElementById('timer-display').classList.remove('warning');
+  }
+}
+</script>
+</body>
+</html>
